@@ -1,12 +1,11 @@
-package TasksClasses;
+package tasks;
 
 public class Task {
     private String name;
     private String status;
     private String description;
     private int id;
-    public Task(int id, String name, String description) {
-        this.id = id;
+    public Task(String name, String description) {
         this.name = name;
         this.status = "NEW";
         this.description = description;
@@ -30,5 +29,17 @@ public class Task {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }
