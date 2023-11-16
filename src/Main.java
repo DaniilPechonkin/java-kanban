@@ -1,36 +1,39 @@
 import manager.Manager;
+import tasks.Task;
+import tasks.Epic;
+import tasks.Subtask;
 
 public class Main {
 
     public static void main(String[] args) {
         Manager manager = new Manager();
-        /*manager.addTask("firstTask", "1");
-        manager.addTask("secondTask", "2");
 
-        manager.addEpic("firstEpic", "123");
-        manager.addSubtask(3, "firstSubtask", "123");
-        manager.addSubtask(3, "secondSubtask", "123");
+        /*Task task1 = new Task("firstTask", "1");
+        Task task2 = new Task("secondTask", "2");
+        manager.addTask(task1);
+        manager.addTask(task2);
 
-        manager.addEpic("secondEpic", "123");
-        manager.addSubtask(3, "firstSubtask", "123");
+        Epic epic1 = new Epic("firstEpic", "123");
+        manager.addEpic(epic1);
+        Subtask subtask1 = new Subtask("firstSubtask", "123",3);
+        Subtask subtask2 = new Subtask("secondSubtask", "123",3);
+        manager.addSubtask(subtask1);
+        manager.addSubtask(subtask2);
 
-        manager.printAllTasks();
-        manager.printAllEpics();
-        manager.printAllSubtasks();
+        Epic epic2 = new Epic("secondEpic", "123");
+        manager.addEpic(epic2);
+        Subtask subtask3 = new Subtask( "firstSubtask", "123", 3);
+        manager.addSubtask(subtask3);
 
-        manager.updateTask(1, "firstTask1", "1.1", "DONE");
-        manager.updateTask(4, "firstSubtask1", "123.1", "DONE");
-        manager.updateTask(7, "firstSubtask12", "123.12", "DONE");
-
-        manager.printAllTasks();
-        manager.printAllEpics();
-        manager.printAllSubtasks();
+        System.out.println(manager.getAllTasks());
+        System.out.println(manager.getAllEpics());
+        System.out.println(manager.getAllSubtasks());
 
         manager.removeEpic(6);
         manager.removeTask(1);
 
-        manager.printAllTasks();
-        manager.printAllEpics();
-        manager.printAllSubtasks();*/
+        System.out.println(manager.getAllTasks());
+        System.out.println(manager.getAllEpics());
+        System.out.println(manager.getAllSubtasks());*/
     }
 }
