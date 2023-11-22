@@ -5,6 +5,7 @@ import tasks.Subtask;
 import tasks.Task;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 public interface TaskManager {
 
@@ -52,7 +53,5 @@ public interface TaskManager {
     //получение списка всех подзадач epica
     public ArrayList<Subtask> getEpicSubtasks(int id);
 
-    public int addId();
-
-    public void changeStatus(int epicId);
+    public LinkedList<Task> getHistory();
 }

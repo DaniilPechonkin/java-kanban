@@ -1,14 +1,16 @@
 package manager;
 
 import tasks.Epic;
+import tasks.Status;
 import tasks.Subtask;
 import tasks.Task;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 public class InMemoryTaskManager implements TaskManager {
-    InMemoryHistoryManager historyManager = new InMemoryHistoryManager();
+    private final HistoryManager historyManager = new InMemoryHistoryManager();
     private final HashMap<Integer, Task> tasks = new HashMap<>();
     private final HashMap<Integer, Epic> epics = new HashMap<>();
     private final HashMap<Integer, Subtask> subtasks = new HashMap<>();
@@ -42,19 +44,25 @@ public class InMemoryTaskManager implements TaskManager {
     //методы получения по id
     @Override
     public Epic findEpic(int id) {
-        historyManager.addInHistory(epics.get(id));
+        if (epics.containsKey(id)) {
+            historyManager.addInHistory(epics.get(id));
+        }
         return epics.get(id);
     }
 
     @Override
     public Subtask findSubtask(int id) {
-        historyManager.addInHistory(subtasks.get(id));
+        if (subtasks.containsKey(id)) {
+            historyManager.addInHistory(subtasks.get(id));
+        }
         return subtasks.get(id);
     }
 
     @Override
     public Task findTask(int id) {
-        historyManager.addInHistory(tasks.get(id));
+        if (tasks.containsKey(id)) {
+            historyManager.addInHistory(tasks.get(id));
+        }
         return tasks.get(id);
     }
 
@@ -84,7 +92,8 @@ public class InMemoryTaskManager implements TaskManager {
     public void removeEpic(Integer id) {
         for (Integer subtaskId : epics.get(id).getSubtasksId()) {
             subtasks.remove(subtaskId);
-        } epics.remove(id);
+        }
+        epics.remove(id);
     }
 
     @Override
@@ -145,12 +154,15 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public int addId() {
+    public LinkedList<Task> getHistory() {
+        return historyManager.getHistory();
+    }
+
+    private int addId() {
         return ++count;
     }
 
-    @Override
-    public void changeStatus(int epicId) {
+    private void changeStatus(int epicId) {
         int curSubtasks = 0;
         int done = 0;
         int news = 0;

@@ -1,43 +1,48 @@
-import manager.InMemoryHistoryManager;
-import manager.InMemoryTaskManager;
+import manager.HistoryManager;
+import manager.Manager;
+import manager.TaskManager;
+import tasks.Task;
+import tasks.Epic;
+import tasks.Subtask;
 
 public class Main {
 
     public static void main(String[] args) {
-        InMemoryTaskManager manager = new InMemoryTaskManager();
-        InMemoryHistoryManager historyManager = new InMemoryHistoryManager();
+        Manager manager = new Manager();
+        HistoryManager historyManager = manager.getDefaultHistory();
+        TaskManager taskManager = manager.getDefaultTask();
 
-        tasks.Task task1 = new tasks.Task("firstTask", "1");
-        tasks.Task task2 = new tasks.Task("secondTask", "2");
-        manager.addTask(task1);
-        manager.addTask(task2);
+        Task task1 = new tasks.Task("firstTask", "1");
+        Task task2 = new tasks.Task("secondTask", "2");
+        taskManager.addTask(task1);
+        taskManager.addTask(task2);
 
-        tasks.Epic epic1 = new tasks.Epic("firstEpic", "123");
-        manager.addEpic(epic1);
-        tasks.Subtask subtask1 = new tasks.Subtask("firstSubtask", "123",3);
-        tasks.Subtask subtask2 = new tasks.Subtask("secondSubtask", "123",3);
-        manager.addSubtask(subtask1);
-        manager.addSubtask(subtask2);
+        Epic epic1 = new tasks.Epic("firstEpic", "123");
+        taskManager.addEpic(epic1);
+        Subtask subtask1 = new tasks.Subtask("firstSubtask", "123",3);
+        Subtask subtask2 = new tasks.Subtask("secondSubtask", "123",3);
+        taskManager.addSubtask(subtask1);
+        taskManager.addSubtask(subtask2);
 
-        tasks.Epic epic2 = new tasks.Epic("secondEpic", "123");
-        manager.addEpic(epic2);
-        tasks.Subtask subtask3 = new tasks.Subtask( "firstSubtask", "123", 3);
-        manager.addSubtask(subtask3);
+        Epic epic2 = new tasks.Epic("secondEpic", "123");
+        taskManager.addEpic(epic2);
+        Subtask subtask3 = new tasks.Subtask( "firstSubtask", "123", 3);
+        taskManager.addSubtask(subtask3);
 
-        System.out.println(manager.getAllTasks());
-        System.out.println(manager.getAllEpics());
-        System.out.println(manager.getAllSubtasks());
+        System.out.println(taskManager.getAllTasks());
+        System.out.println(taskManager.getAllEpics());
+        System.out.println(taskManager.getAllSubtasks());
 
-        manager.removeEpic(6);
-        manager.removeTask(1);
+        taskManager.removeEpic(6);
+        taskManager.removeTask(1);
 
-        System.out.println(manager.getAllTasks());
-        System.out.println(manager.getAllEpics());
-        System.out.println(manager.getAllSubtasks());
+        System.out.println(taskManager.getAllTasks());
+        System.out.println(taskManager.getAllEpics());
+        System.out.println(taskManager.getAllSubtasks());
 
-        manager.findTask(0);
-        manager.findTask(1);
-        manager.findTask(2);
+        taskManager.findTask(1);
+        taskManager.findTask(2);
+        taskManager.findTask(3);
 
         System.out.println(historyManager.getHistory());
     }
