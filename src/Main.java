@@ -8,9 +8,8 @@ import tasks.Subtask;
 public class Main {
 
     public static void main(String[] args) {
-        Manager manager = new Manager();
-        HistoryManager historyManager = manager.getDefaultHistory();
-        TaskManager taskManager = manager.getDefaultTask();
+        HistoryManager historyManager = Manager.getDefaultHistory();
+        TaskManager taskManager = Manager.getDefaultTask();
 
         Task task1 = new tasks.Task("firstTask", "1");
         Task task2 = new tasks.Task("secondTask", "2");

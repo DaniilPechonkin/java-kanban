@@ -7,10 +7,10 @@ import tasks.Task;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.List;
 
 public class InMemoryTaskManager implements TaskManager {
-    private final HistoryManager historyManager = new InMemoryHistoryManager();
+    private final HistoryManager historyManager = Manager.getDefaultHistory();
     private final HashMap<Integer, Task> tasks = new HashMap<>();
     private final HashMap<Integer, Epic> epics = new HashMap<>();
     private final HashMap<Integer, Subtask> subtasks = new HashMap<>();
@@ -44,26 +44,23 @@ public class InMemoryTaskManager implements TaskManager {
     //методы получения по id
     @Override
     public Epic findEpic(int id) {
-        if (epics.containsKey(id)) {
-            historyManager.addInHistory(epics.get(id));
-        }
-        return epics.get(id);
+        Epic epic = epics.get(id);
+        historyManager.addInHistory(epic);
+        return epic;
     }
 
     @Override
     public Subtask findSubtask(int id) {
-        if (subtasks.containsKey(id)) {
-            historyManager.addInHistory(subtasks.get(id));
-        }
-        return subtasks.get(id);
+        Subtask subtask = subtasks.get(id);
+        historyManager.addInHistory(subtask);
+        return subtask;
     }
 
     @Override
     public Task findTask(int id) {
-        if (tasks.containsKey(id)) {
-            historyManager.addInHistory(tasks.get(id));
-        }
-        return tasks.get(id);
+        Task task = tasks.get(id);
+        historyManager.addInHistory(task);
+        return task;
     }
 
     @Override
@@ -154,7 +151,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public LinkedList<Task> getHistory() {
+    public List<Task> getHistory() {
         return historyManager.getHistory();
     }
 
