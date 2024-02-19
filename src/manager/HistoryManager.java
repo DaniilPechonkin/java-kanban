@@ -5,7 +5,7 @@ import tasks.Task;
 import java.util.List;
 
 public interface HistoryManager {
-    void addInHistory(Task task);
+    List<Task> getHistory();
 
-    void removeFromHistory(int id);
+    void addInHistory(Task task);
 }
