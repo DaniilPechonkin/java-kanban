@@ -3,6 +3,7 @@ package tasks;
 import manager.InMemoryTaskManager;
 import manager.Manager;
 import manager.TaskManager;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -12,13 +13,19 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class SubtaskTest {
     InMemoryTaskManager taskManager = new InMemoryTaskManager();
+    Epic epic;
+    Subtask subtask;
+
+    @BeforeEach
+    public void beforeEach() {
+        epic = new Epic("1", "2");
+        taskManager.addEpic(epic);
+        subtask = new Subtask("epic", "epic",1);
+        taskManager.addSubtask(subtask);
+    }
 
     @Test
     void addNewSubtask() {
-        Epic epic = new Epic("1", "2");
-        taskManager.addEpic(epic);
-        Subtask subtask = new Subtask("epic", "epic",0);
-        taskManager.addSubtask(subtask);
         Subtask savedSubtask = taskManager.findSubtask(subtask.getId());
 
         assertNotNull(savedSubtask, "Задача не найдена.");
@@ -33,10 +40,7 @@ class SubtaskTest {
 
     @Test
     public void canFindId() {
-        Epic epic1 = new tasks.Epic("firstEpic", "123");
-        Subtask subtask1 = new tasks.Subtask("firstTask", "1", 1);
-        Subtask subtask2 = new tasks.Subtask("secondTask", "2", 1);
-        assertEquals(taskManager.findSubtask(2).getId(), subtask2.getId());
+        assertEquals(taskManager.findSubtask(2).getId(), subtask.getId());
     }
 
     @Test
