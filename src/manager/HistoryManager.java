@@ -5,7 +5,7 @@ import tasks.Task;
 import java.util.List;
 
 public interface HistoryManager {
-    List<Task> getHistory();
+    InMemoryHistoryManager.DoubleLinkedList<Task> getHistory();
 
     void addInHistory(Task task);
 

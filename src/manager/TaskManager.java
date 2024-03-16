@@ -53,5 +53,5 @@ public interface TaskManager {
     //получение списка всех подзадач epica
     ArrayList<Subtask> getEpicSubtasks(int id);
 
-    List<Task> getHistory();
+    InMemoryHistoryManager.DoubleLinkedList<Task> getHistory();
 }
