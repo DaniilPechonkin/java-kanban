@@ -10,8 +10,8 @@ public class InMemoryHistoryManager implements HistoryManager {
     public final DoubleLinkedList<Task> lastActivity = new DoubleLinkedList<>();
 
     @Override
-    public DoubleLinkedList<Task> getHistory() {
-        return lastActivity;
+    public List<Task> getHistory() {
+        return lastActivity.getTasks();
     }
 
     @Override
@@ -20,7 +20,7 @@ public class InMemoryHistoryManager implements HistoryManager {
             if (lastActivity.nodes.containsKey(task.getId())) {
                 lastActivity.removeNode(task.getId());
             }
-            lastActivity.addLast(task);
+            lastActivity.linkLast(task);
         }
     }
 
@@ -31,22 +31,22 @@ public class InMemoryHistoryManager implements HistoryManager {
 
 
     public static class Node<E> {
-        public E index;
+        public Task index;
         public Node<E> next;
         public Node<E> prev;
 
-        public Node(E index) {
+        public Node(Task index) {
             this.index = index;
         }
     }
 
     public class DoubleLinkedList<T> {
-        private final Map<Integer, Node> nodes = new HashMap<>();
+        public final Map<Integer, Node> nodes = new HashMap<>();
         public Node<T> head;
         public Node<T> tail;
 
-        public void linkLast(T index) {
-            Node node = new Node<>(index);
+        public void linkLast(Task task) {
+            Node node = new Node<>(task);
             if (tail == null) {
                 head = node;
             } else {
@@ -56,13 +56,18 @@ public class InMemoryHistoryManager implements HistoryManager {
             tail = node;
         }
 
-        public T getLast() {
-            final Node<T> curTail = tail;
-            return tail.index;
+        public void addLast(Task task) {
+            nodes.put(task.getId(), new Node(task));
         }
 
-        public void addLast(Task task) {
-            nodes.put(task.getId(), new Node(task.getId()));
+        public List<Task> getTasks() {
+            List<Task> tasks = new ArrayList<>();
+            Node curNode = head;
+            while (curNode.next != null) {
+                tasks.add(curNode.index);
+                curNode = curNode.next;
+            }
+            return tasks;
         }
 
         public List<Node> getNodes() {
@@ -73,28 +78,22 @@ public class InMemoryHistoryManager implements HistoryManager {
             return nodesList;
         }
 
-        public void removeLastNode() {
-            for (Node node : nodes.values()) {
-                if (tail == null) {
-                    nodes.remove(node);
-                }
-            }
-        }
-
-        public void removeFirstNode() {
-            for (Node node : nodes.values()) {
-                if (head == null) {
-                    nodes.remove(node);
-                }
-            }
-        }
-
         public void removeNode(Integer id) {
-            for (Integer i : nodes.keySet()) {
-                if (i == id) {
-                    nodes.remove(id);
-                }
+            Node node = nodes.get(id);
+            if (node.prev == null) {
+                head = node.next;
+                head.prev = null;
+            } else if (node.next == null) {
+                tail = node.prev;
+                tail.next= null;
+            } else if (node.prev == null && node.next == null) {
+                head = null;
+                tail = null;
+            } else if (node.prev != null && node.next != null) {
+                node.prev.next = node.next;
+                node.next.prev = node.prev;
             }
+            nodes.remove(id);
         }
     }
 }
