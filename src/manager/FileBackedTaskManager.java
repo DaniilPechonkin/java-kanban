@@ -4,111 +4,188 @@ import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.*;
 
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
     String FILENAME = "autosave.csv";
+    String HISTORY_FILE = "history.csv";
 
-    void save(Task task, String filename) {
-        try (FileWriter fileWriter = new FileWriter(filename)) {
-                fileWriter.write(toString(task) + "\n");
+    void save(Task task) {
+        try (FileWriter fileWriter = new FileWriter(FILENAME)) {
+                fileWriter.write(ToFromString.toString(task) + "\n");
         } catch (IOException e) {
             System.out.println("Произошла ошибка во время записи файла.");
         }
     }
 
-    void loadFromFile(String filename) throws IOException {
-        FileReader reader = new FileReader(filename);
+    Task saveInHistory(Task task) {
+        try (FileWriter fileWriter = new FileWriter(HISTORY_FILE)) {
+            fileWriter.write(ToFromString.toString(task) + "\n");
+        } catch (IOException e) {
+            System.out.println("Произошла ошибка во время записи файла.");
+        }
+        return task;
+    }
+
+     FileBackedTaskManager loadFromFile() throws IOException {
+        FileBackedTaskManager manager = new FileBackedTaskManager();
+        FileReader reader = new FileReader(FILENAME);
         BufferedReader br = new BufferedReader(reader);
         while (br.ready()) {
             String str = br.readLine();
-            String[] values = str.split(",");
-            Task task = fromString(str);
+            Task task = ToFromString.fromString(str);
             if (task.getClass().equals(Task.class)) {
-                addTask(task);
+                manager.addTask(task);
             } else if (task.getClass().equals(Subtask.class)) {
                 Subtask subtask = (Subtask) task;
-                addSubtask(subtask);
+                manager.addSubtask(subtask);
             } else if (task.getClass().equals(Epic.class)) {
                 Epic epic = (Epic) task;
-                addEpic(epic);
+                manager.addEpic(epic);
             }
         }
         br.close();
+
+        FileReader historyReader = new FileReader(HISTORY_FILE);
+        BufferedReader hbr = new BufferedReader(historyReader);
+        while (hbr.ready()) {
+            String str = hbr.readLine();
+            String[] history = str.split(",");
+            for (String i : history) {
+                Integer id = Integer.parseInt(i);
+                if (manager.getAllTasks().contains(id)) {
+                    Task task = manager.findTask(id);
+                    manager.getHistoryManager().addInHistory(task);
+                } else if (manager.getAllSubtasks().contains(id)) {
+                    Subtask subtask = manager.findSubtask(id);
+                    manager.getHistoryManager().addInHistory(subtask);
+                } else if (manager.getAllEpics().contains(id)) {
+                    Epic epic = manager.findEpic(id);
+                    manager.getHistoryManager().addInHistory(epic);
+                }
+            }
+        }
+        hbr.close();
+
+        return manager;
     }
 
     @Override
     public void addSubtask(Subtask subtask) {
         super.addSubtask(subtask);
-        save(subtask, FILENAME);
+        save(subtask);
     }
 
     @Override
     public void addTask(Task task) {
         super.addTask(task);
-        save(task, FILENAME);
+        save(task);
     }
 
     @Override
     public void addEpic(Epic epic) {
         super.addEpic(epic);
-        save(epic, FILENAME);
+        save(epic);
     }
-
-    public static String toString(Task task) {
-        if (task.getClass() == Subtask.class) {
-            return task.getId() + "," + task.getClass() + ","+ task.getName() + "," + task.getStatus() + ","
-                    + task.getDescription() + "," + ((Subtask) task).getEpicId() + "\n";
-        } else {
-            return task.getId() + "," + task.getClass() + ","+ task.getName() + "," + task.getStatus() + "," + task.getDescription() + "\n";
+    @Override
+    public void removeTask(Integer id)  {
+        super.removeTask(id);
+        for (Task task : getAllTasks()) {
+            save(task);
+        }
+        for (Subtask subtask : getAllSubtasks()) {
+            save(subtask);
+        }
+        for(Epic epic :getAllEpics()) {
+            save(epic);
         }
     }
 
-    public static Task fromString(String value) {
-        String[] values = value.split(",");
-        if (values[1].equals("SUBTASK")) {
-            Subtask subtask = new Subtask(values[0], values[3], Integer.parseInt(values[5]));
-            subtask.setName(values[2]);
-            subtask.setDescription(values[4]);
-            return subtask;
-        } else if (values[1].equals("EPIC")){
-            Epic epic = new Epic(values[0], values[3]);
-            epic.setName(values[2]);
-            epic.setDescription(values[4]);
-            return epic;
-        } else {
-            Task task = new Task(values[0], values[3]);
-            task.setName(values[2]);
-            task.setDescription(values[4]);
-            return task;
+    @Override
+    public void removeEpic(Integer id) {
+        super.removeEpic(id);
+        for (Task task : getAllTasks()) {
+            save(task);
+        }
+        for (Subtask subtask : getAllSubtasks()) {
+            save(subtask);
+        }
+        for(Epic epic :getAllEpics()) {
+            save(epic);
         }
     }
 
-    static String historyToString(HistoryManager manager) {
-        String history = "";
-        for (Task task : manager.getHistory()) {
-            history += toString(task);
+    @Override
+    public void removeSubtask(Integer id) {
+        super.removeSubtask(id);
+        for (Task task : getAllTasks()) {
+            save(task);
         }
-        return history;
+        for (Subtask subtask : getAllSubtasks()) {
+            save(subtask);
+        }
+        for(Epic epic :getAllEpics()) {
+            save(epic);
+        }
     }
 
-    static List<Task> historyFromString(String value) throws IOException{
-        List<Task> history = new ArrayList<>();
-        FileReader reader = new FileReader(value);
-        BufferedReader br = new BufferedReader(reader);
-        while (br.ready()) {
-            String str = br.readLine();
-            String[] values = str.split(",");
-            Task task = fromString(str);
-            history.add(task);
+    @Override
+    public void removeAllTasks() {
+        super.removeAllTasks();
+        for (Task task : getAllTasks()) {
+            save(task);
         }
-        br.close();
-        return history;
+        for (Subtask subtask : getAllSubtasks()) {
+            save(subtask);
+        }
+        for(Epic epic :getAllEpics()) {
+            save(epic);
+        }
+    }
+
+    @Override
+    public void removeAllEpics() {
+        super.removeAllEpics();
+        for (Task task : getAllTasks()) {
+            save(task);
+        }
+        for (Subtask subtask : getAllSubtasks()) {
+            save(subtask);
+        }
+        for(Epic epic :getAllEpics()) {
+            save(epic);
+        }
+    }
+
+    @Override
+    public void removeAllSubtasks() {
+        super.removeAllSubtasks();
+        for (Task task : getAllTasks()) {
+            save(task);
+        }
+        for (Subtask subtask : getAllSubtasks()) {
+            save(subtask);
+        }
+        for(Epic epic :getAllEpics()) {
+            save(epic);
+        }
+    }
+
+    @Override
+    public Epic findEpic(int id) {
+        Epic epic;
+        return epic = (Epic) saveInHistory(super.findEpic(id));
+    }
+
+    @Override
+    public Subtask findSubtask(int id) {
+        Subtask subtask;
+        return subtask = (Subtask) saveInHistory(super.findSubtask(id));
+    }
+
+    @Override
+    public Task findTask(int id) {
+        return saveInHistory(super.findTask(id));
     }
 }

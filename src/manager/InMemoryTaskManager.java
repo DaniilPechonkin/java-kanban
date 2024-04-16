@@ -182,4 +182,8 @@ public class InMemoryTaskManager implements TaskManager {
             epics.get(epicId).setStatus(Status.IN_PROGRESS);
         }
     }
+
+    public HistoryManager getHistoryManager() {
+        return historyManager;
+    }
 }
