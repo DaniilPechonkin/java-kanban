@@ -11,181 +11,122 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     String FILENAME = "autosave.csv";
     String HISTORY_FILE = "history.csv";
 
-    void save(Task task) {
-        try (FileWriter fileWriter = new FileWriter(FILENAME)) {
+    private void save() {
+        for (Task task : getAllTasks()) {
+            try (FileWriter fileWriter = new FileWriter(FILENAME)) {
                 fileWriter.write(ToFromString.toString(task) + "\n");
-        } catch (IOException e) {
-            System.out.println("Произошла ошибка во время записи файла.");
+            } catch (IOException e) {
+                System.out.println("Произошла ошибка во время записи файла.");
+            }
+        }
+        for (Subtask subtask : getAllSubtasks()) {
+            try (FileWriter fileWriter = new FileWriter(FILENAME)) {
+                fileWriter.write(ToFromString.toString(subtask) + "\n");
+            } catch (IOException e) {
+                System.out.println("Произошла ошибка во время записи файла.");
+            }
+        }
+        for(Epic epic :getAllEpics()) {
+            try (FileWriter fileWriter = new FileWriter(FILENAME)) {
+                fileWriter.write(ToFromString.toString(epic) + "\n");
+            } catch (IOException e) {
+                System.out.println("Произошла ошибка во время записи файла.");
+            }
         }
     }
 
-    Task saveInHistory(Task task) {
-        try (FileWriter fileWriter = new FileWriter(HISTORY_FILE)) {
-            fileWriter.write(ToFromString.toString(task) + "\n");
-        } catch (IOException e) {
-            System.out.println("Произошла ошибка во время записи файла.");
-        }
-        return task;
-    }
-
-     FileBackedTaskManager loadFromFile() throws IOException {
+    public static FileBackedTaskManager loadFromFile(String path) throws IOException {
         FileBackedTaskManager manager = new FileBackedTaskManager();
-        FileReader reader = new FileReader(FILENAME);
+        FileReader reader = new FileReader(path);
         BufferedReader br = new BufferedReader(reader);
         while (br.ready()) {
             String str = br.readLine();
             Task task = ToFromString.fromString(str);
             if (task.getClass().equals(Task.class)) {
-                manager.addTask(task);
+                manager.tasks.put(task.getId(), task);
             } else if (task.getClass().equals(Subtask.class)) {
                 Subtask subtask = (Subtask) task;
-                manager.addSubtask(subtask);
+                manager.subtasks.put(subtask.getId(), subtask);
+                Epic epic = manager.epics.get(subtask.getEpicId());
+                epic.getSubtasksId().add(subtask.getId());
+                manager.epics.put(epic.getId(), epic);
             } else if (task.getClass().equals(Epic.class)) {
                 Epic epic = (Epic) task;
-                manager.addEpic(epic);
+                manager.epics.put(epic.getId(), epic);
             }
         }
         br.close();
-
-        FileReader historyReader = new FileReader(HISTORY_FILE);
-        BufferedReader hbr = new BufferedReader(historyReader);
-        while (hbr.ready()) {
-            String str = hbr.readLine();
-            String[] history = str.split(",");
-            for (String i : history) {
-                Integer id = Integer.parseInt(i);
-                if (manager.getAllTasks().contains(id)) {
-                    Task task = manager.findTask(id);
-                    manager.getHistoryManager().addInHistory(task);
-                } else if (manager.getAllSubtasks().contains(id)) {
-                    Subtask subtask = manager.findSubtask(id);
-                    manager.getHistoryManager().addInHistory(subtask);
-                } else if (manager.getAllEpics().contains(id)) {
-                    Epic epic = manager.findEpic(id);
-                    manager.getHistoryManager().addInHistory(epic);
-                }
-            }
-        }
-        hbr.close();
-
         return manager;
     }
 
     @Override
     public void addSubtask(Subtask subtask) {
         super.addSubtask(subtask);
-        save(subtask);
+        save();
     }
 
     @Override
     public void addTask(Task task) {
         super.addTask(task);
-        save(task);
+        save();
     }
 
     @Override
     public void addEpic(Epic epic) {
         super.addEpic(epic);
-        save(epic);
+        save();
     }
     @Override
     public void removeTask(Integer id)  {
         super.removeTask(id);
-        for (Task task : getAllTasks()) {
-            save(task);
-        }
-        for (Subtask subtask : getAllSubtasks()) {
-            save(subtask);
-        }
-        for(Epic epic :getAllEpics()) {
-            save(epic);
-        }
+        save();
     }
 
     @Override
     public void removeEpic(Integer id) {
         super.removeEpic(id);
-        for (Task task : getAllTasks()) {
-            save(task);
-        }
-        for (Subtask subtask : getAllSubtasks()) {
-            save(subtask);
-        }
-        for(Epic epic :getAllEpics()) {
-            save(epic);
-        }
+        save();
     }
 
     @Override
     public void removeSubtask(Integer id) {
         super.removeSubtask(id);
-        for (Task task : getAllTasks()) {
-            save(task);
-        }
-        for (Subtask subtask : getAllSubtasks()) {
-            save(subtask);
-        }
-        for(Epic epic :getAllEpics()) {
-            save(epic);
-        }
+        save();
     }
 
     @Override
     public void removeAllTasks() {
         super.removeAllTasks();
-        for (Task task : getAllTasks()) {
-            save(task);
-        }
-        for (Subtask subtask : getAllSubtasks()) {
-            save(subtask);
-        }
-        for(Epic epic :getAllEpics()) {
-            save(epic);
-        }
+        save();
     }
 
     @Override
     public void removeAllEpics() {
         super.removeAllEpics();
-        for (Task task : getAllTasks()) {
-            save(task);
-        }
-        for (Subtask subtask : getAllSubtasks()) {
-            save(subtask);
-        }
-        for(Epic epic :getAllEpics()) {
-            save(epic);
-        }
+        save();
     }
 
     @Override
     public void removeAllSubtasks() {
         super.removeAllSubtasks();
-        for (Task task : getAllTasks()) {
-            save(task);
-        }
-        for (Subtask subtask : getAllSubtasks()) {
-            save(subtask);
-        }
-        for(Epic epic :getAllEpics()) {
-            save(epic);
-        }
+        save();
     }
 
     @Override
-    public Epic findEpic(int id) {
-        Epic epic;
-        return epic = (Epic) saveInHistory(super.findEpic(id));
+    public void updateTask(Task task) {
+        super.updateTask(task);
+        save();
     }
 
     @Override
-    public Subtask findSubtask(int id) {
-        Subtask subtask;
-        return subtask = (Subtask) saveInHistory(super.findSubtask(id));
+    public void updateSubtask(Subtask subtask) {
+        super.updateSubtask(subtask);
+        save();
     }
 
     @Override
-    public Task findTask(int id) {
-        return saveInHistory(super.findTask(id));
+    public void updateEpic(Epic epic) {
+        super.updateEpic(epic);
+        save();
     }
 }

@@ -11,9 +11,9 @@ import java.util.List;
 
 public class InMemoryTaskManager implements TaskManager {
     private final HistoryManager historyManager = Manager.getDefaultHistory();
-    private final HashMap<Integer, Task> tasks = new HashMap<>();
-    private final HashMap<Integer, Epic> epics = new HashMap<>();
-    private final HashMap<Integer, Subtask> subtasks = new HashMap<>();
+    protected final HashMap<Integer, Task> tasks = new HashMap<>();
+    protected final HashMap<Integer, Epic> epics = new HashMap<>();
+    protected final HashMap<Integer, Subtask> subtasks = new HashMap<>();
     private int count = 0;
 
     //методы создания
@@ -27,7 +27,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void addSubtask(Subtask newSubtask) {
         Epic epic = epics.get(newSubtask.getEpicId());
-        int subtaskId= addId();
+        int subtaskId = addId();
         newSubtask.setId(subtaskId);
         subtasks.put(subtaskId, newSubtask);
         epic.getSubtasksId().add(subtaskId);
