@@ -6,15 +6,14 @@ import tasks.Subtask;
 import tasks.Task;
 
 public class ToFromString {
-    static String EPIC_IN_FILE = "class tasks.Epic";
-    static String SUBTASK_IN_FILE = "class tasks.Subtask";
-
     public static String toString(Task task) {
         if (task.getClass() == Subtask.class) {
-            return task.getId() + "," + task.getClass() + ","+ task.getName() + "," + task.getStatus() + ","
+            return task.getId() + "," + "Subtask" +  "," + task.getName() + "," + task.getStatus() + ","
                     + task.getDescription() + "," + ((Subtask) task).getEpicId() + "\n";
+        } else if (task.getClass() == Epic.class){
+            return task.getId() + "," + "Epic" +  ","+ task.getName() + "," + task.getStatus() + "," + task.getDescription() + "\n";
         } else {
-            return task.getId() + "," + task.getClass() + ","+ task.getName() + "," + task.getStatus() + "," + task.getDescription() + "\n";
+            return task.getId() + "," + "Task" + ","+ task.getName() + "," + task.getStatus() + "," + task.getDescription() + "\n";
         }
     }
 
@@ -29,12 +28,12 @@ public class ToFromString {
         if (values.length == 6) {
             epicId = values[5];
         }
-        if (type.equals(SUBTASK_IN_FILE)) {
+        if (type.equals("Subtask")) {
             Subtask subtask = new Subtask(name, description, Integer.parseInt(epicId));
             subtask.setId(id);
             subtask.setStatus(getStatus(status));
             return subtask;
-        } else if (type.equals(EPIC_IN_FILE)){
+        } else if (type.equals("Epic")){
             Epic epic = new Epic(name, description);
             epic.setId(id);
             epic.setStatus(getStatus(status));

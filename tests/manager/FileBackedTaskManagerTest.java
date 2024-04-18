@@ -16,7 +16,7 @@ public class FileBackedTaskManagerTest {
     FileBackedTaskManager fileManager = new FileBackedTaskManager();
 
     @Test
-    public void canLoadFromFile() throws IOException {
+    public void canLoadFromFile() {
         Task task1 = new tasks.Task("firstTask", "1");
         Task task2 = new tasks.Task("secondTask", "2");
         fileManager.addTask(task1);
