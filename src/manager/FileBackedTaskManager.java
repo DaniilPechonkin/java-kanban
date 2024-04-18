@@ -9,29 +9,20 @@ import java.io.*;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
     String FILENAME = "autosave.csv";
-    String HISTORY_FILE = "history.csv";
-
     private void save() {
-        for (Task task : getAllTasks()) {
-            try (FileWriter fileWriter = new FileWriter(FILENAME)) {
-                fileWriter.write(ToFromString.toString(task) + "\n");
-            } catch (IOException e) {
-                System.out.println("Произошла ошибка во время записи файла.");
+        try (FileWriter fileWriter = new FileWriter(FILENAME)) {
+            fileWriter.write("id,type,name,status,description,epic" + "\n");
+            for (Task task : getAllTasks()) {
+                fileWriter.write(ToFromString.toString(task));
             }
-        }
-        for (Subtask subtask : getAllSubtasks()) {
-            try (FileWriter fileWriter = new FileWriter(FILENAME)) {
-                fileWriter.write(ToFromString.toString(subtask) + "\n");
-            } catch (IOException e) {
-                System.out.println("Произошла ошибка во время записи файла.");
+            for (Epic epic : getAllEpics()) {
+                fileWriter.write(ToFromString.toString(epic));
             }
-        }
-        for(Epic epic :getAllEpics()) {
-            try (FileWriter fileWriter = new FileWriter(FILENAME)) {
-                fileWriter.write(ToFromString.toString(epic) + "\n");
-            } catch (IOException e) {
-                System.out.println("Произошла ошибка во время записи файла.");
+            for (Subtask subtask :getAllSubtasks()) {
+                fileWriter.write(ToFromString.toString(subtask));
             }
+        } catch (IOException e) {
+            System.out.println("Произошла ошибка во время записи файла.");
         }
     }
 
@@ -41,18 +32,20 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         BufferedReader br = new BufferedReader(reader);
         while (br.ready()) {
             String str = br.readLine();
-            Task task = ToFromString.fromString(str);
-            if (task.getClass().equals(Task.class)) {
-                manager.tasks.put(task.getId(), task);
-            } else if (task.getClass().equals(Subtask.class)) {
-                Subtask subtask = (Subtask) task;
-                manager.subtasks.put(subtask.getId(), subtask);
-                Epic epic = manager.epics.get(subtask.getEpicId());
-                epic.getSubtasksId().add(subtask.getId());
-                manager.epics.put(epic.getId(), epic);
-            } else if (task.getClass().equals(Epic.class)) {
-                Epic epic = (Epic) task;
-                manager.epics.put(epic.getId(), epic);
+            if (!str.equals("id,type,name,status,description,epic")) {
+                Task task = ToFromString.fromString(str);
+                if (task.getClass().equals(Task.class)) {
+                    manager.tasks.put(task.getId(), task);
+                } else if (task.getClass().equals(Subtask.class)) {
+                    Subtask subtask = (Subtask) task;
+                    manager.subtasks.put(subtask.getId(), subtask);
+                    Epic epic = manager.epics.get(subtask.getEpicId());
+                    epic.getSubtasksId().add(subtask.getId());
+                    manager.epics.put(epic.getId(), epic);
+                } else if (task.getClass().equals(Epic.class)) {
+                    Epic epic = (Epic) task;
+                    manager.epics.put(epic.getId(), epic);
+                }
             }
         }
         br.close();

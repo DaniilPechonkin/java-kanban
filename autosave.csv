@@ -1,0 +1,6 @@
+id,type,name,status,description,epic
+1,class tasks.Task,firstTask,NEW,1
+2,class tasks.Task,secondTask,NEW,2
+3,class tasks.Epic,firstEpic,NEW,123
+4,class tasks.Subtask,firstSubtask,NEW,123,3
+5,class tasks.Subtask,secondSubtask,NEW,123,3

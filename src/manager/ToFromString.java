@@ -1,10 +1,14 @@
 package manager;
 
 import tasks.Epic;
+import tasks.Status;
 import tasks.Subtask;
 import tasks.Task;
 
 public class ToFromString {
+    static String EPIC_IN_FILE = "class tasks.Epic";
+    static String SUBTASK_IN_FILE = "class tasks.Subtask";
+
     public static String toString(Task task) {
         if (task.getClass() == Subtask.class) {
             return task.getId() + "," + task.getClass() + ","+ task.getName() + "," + task.getStatus() + ","
@@ -16,7 +20,7 @@ public class ToFromString {
 
     public static Task fromString(String value) {
         String[] values = value.split(",");
-        String id = values[0];
+        int id = Integer.parseInt(values[0]);
         String type = values[1];
         String name = values[2];
         String status = values[3];
@@ -25,21 +29,31 @@ public class ToFromString {
         if (values.length == 6) {
             epicId = values[5];
         }
-        if (type.equals("SUBTASK")) {
-            Subtask subtask = new Subtask(id, status, Integer.parseInt(epicId));
-            subtask.setName(name);
-            subtask.setDescription(description);
+        if (type.equals(SUBTASK_IN_FILE)) {
+            Subtask subtask = new Subtask(name, description, Integer.parseInt(epicId));
+            subtask.setId(id);
+            subtask.setStatus(getStatus(status));
             return subtask;
-        } else if (type.equals("EPIC")){
-            Epic epic = new Epic(id, status);
-            epic.setName(name);
-            epic.setDescription(description);
+        } else if (type.equals(EPIC_IN_FILE)){
+            Epic epic = new Epic(name, description);
+            epic.setId(id);
+            epic.setStatus(getStatus(status));
             return epic;
         } else {
-            Task task = new Task(id, status);
-            task.setName(name);
-            task.setDescription(description);
+            Task task = new Task(name, description);
+            task.setId(id);
+            task.setStatus(getStatus(status));
             return task;
+        }
+    }
+
+    public static Status getStatus(String str) {
+        if (str.equals("NEW")) {
+            return Status.NEW;
+        } else if (str.equals("DONE")) {
+            return Status.DONE;
+        } else {
+            return Status.IN_PROGRESS;
         }
     }
 }
