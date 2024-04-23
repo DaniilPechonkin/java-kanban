@@ -63,37 +63,31 @@ public class InMemoryHistoryManager implements HistoryManager {
         public List<Task> getTasks() {
             List<Task> tasks = new ArrayList<>();
             Node curNode = head;
-            while (curNode.next != null) {
+            while (curNode != null) {
                 tasks.add(curNode.index);
                 curNode = curNode.next;
             }
             return tasks;
         }
 
-        public List<Node> getNodes() {
-            List<Node> nodesList = new ArrayList<>();
-            for (Node node : nodes.values()) {
-                nodesList.add(node);
-            }
-            return nodesList;
-        }
-
         public void removeNode(Integer id) {
             Node node = nodes.get(id);
-            if (node.prev == null) {
-                head = node.next;
-                head.prev = null;
-            } else if (node.next == null) {
-                tail = node.prev;
-                tail.next= null;
-            } else if (node.prev == null && node.next == null) {
-                head = null;
-                tail = null;
-            } else if (node.prev != null && node.next != null) {
-                node.prev.next = node.next;
-                node.next.prev = node.prev;
+            if (node != null) {
+                if (node.prev == null) {
+                    head = node.next;
+                    head.prev = null;
+                } else if (node.next == null) {
+                    tail = node.prev;
+                    tail.next = null;
+                } else if (node.prev == null && node.next == null) {
+                    head = null;
+                    tail = null;
+                } else if (node.prev != null && node.next != null) {
+                    node.prev.next = node.next;
+                    node.next.prev = node.prev;
+                }
+                nodes.remove(id);
             }
-            nodes.remove(id);
         }
     }
 }

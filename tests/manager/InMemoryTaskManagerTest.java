@@ -17,6 +17,7 @@ class InMemoryTaskManagerTest {
     Task task1;
     Epic epic1;
     Subtask subtask1;
+    Subtask subtask2;
 
     @BeforeEach
     public void beforeEach() {
@@ -29,7 +30,7 @@ class InMemoryTaskManagerTest {
         taskManager.addEpic(epic1);
 
         subtask1 = new tasks.Subtask("firstSubtask", "123",3);
-        Subtask subtask2 = new tasks.Subtask("secondSubtask", "123",3);
+        subtask2 = new tasks.Subtask("secondSubtask", "123",3);
         taskManager.addSubtask(subtask1);
         taskManager.addSubtask(subtask2);
     }
@@ -68,4 +69,28 @@ class InMemoryTaskManagerTest {
         assertEquals(taskManager.findEpic(epic1.getId()).getStatus(), Status.IN_PROGRESS);
     }
 
+    @Test
+    public void canChangeStatus() {
+        // Две со статусом NEW
+        assertEquals(epic1.getStatus(), Status.NEW);
+
+        //Две DONE и NEW
+        subtask1.setStatus(Status.DONE);
+        Subtask subtask3 = new Subtask("132", "213123", epic1.getId());
+        subtask3.setStatus(Status.DONE);
+        taskManager.addSubtask(subtask3);
+        assertEquals(epic1.getStatus(), Status.IN_PROGRESS);
+
+        //Две DONE
+        subtask2.setStatus(Status.DONE);
+        taskManager.removeSubtask(subtask3.getId());
+        assertEquals(epic1.getStatus(), Status.DONE);
+
+        //Три IN_PROGRESS
+        subtask3.setStatus(Status.IN_PROGRESS);
+        subtask1.setStatus(Status.IN_PROGRESS);
+        subtask2.setStatus(Status.IN_PROGRESS);
+        taskManager.addSubtask(subtask2);
+        assertEquals(epic1.getStatus(), Status.IN_PROGRESS);
+    }
 }
