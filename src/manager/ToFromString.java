@@ -22,7 +22,6 @@ public class ToFromString {
         int id = Integer.parseInt(values[0]);
         String type = values[1];
         String name = values[2];
-        String status = values[3];
         String description = values[4];
         String epicId = null;
         if (values.length == 6) {
@@ -31,28 +30,18 @@ public class ToFromString {
         if (type.equals("Subtask")) {
             Subtask subtask = new Subtask(name, description, Integer.parseInt(epicId));
             subtask.setId(id);
-            subtask.setStatus(getStatus(status));
+            subtask.setStatus(Status.valueOf(values[3]));
             return subtask;
         } else if (type.equals("Epic")){
             Epic epic = new Epic(name, description);
             epic.setId(id);
-            epic.setStatus(getStatus(status));
+            epic.setStatus(Status.valueOf(values[3]));
             return epic;
         } else {
             Task task = new Task(name, description);
             task.setId(id);
-            task.setStatus(getStatus(status));
+            task.setStatus(Status.valueOf(values[3]));
             return task;
-        }
-    }
-
-    public static Status getStatus(String str) {
-        if (str.equals("NEW")) {
-            return Status.NEW;
-        } else if (str.equals("DONE")) {
-            return Status.DONE;
-        } else {
-            return Status.IN_PROGRESS;
         }
     }
 }
