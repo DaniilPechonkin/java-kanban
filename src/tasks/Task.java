@@ -10,13 +10,15 @@ public class Task {
     private String description;
     private int id;
     private Duration duration;
-    private LocalDateTime startTime = LocalDateTime.now();
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
 
 
     public Task(String name, String description) {
         this.name = name;
         this.status = Status.NEW;
         this.description = description;
+        this.startTime = LocalDateTime.now();
     }
 
     public String getName() {
@@ -51,11 +53,23 @@ public class Task {
         this.id = id;
     }
 
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
 
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
 
     public LocalDateTime getEndTime() {
         if (startTime != null && duration != null) {
-            return startTime.plus(duration);
+            long min = duration.toMinutes();
+            Duration minutes = Duration.ofMinutes(min);
+            return startTime.plus(minutes);
         } else {
             return null;
         }
@@ -67,10 +81,6 @@ public class Task {
 
     public Duration getDuration() {
         return duration;
-    }
-
-    public int compareTo(Task anotherTask) {
-        return this.getStartTime().compareTo(anotherTask.getStartTime());
     }
 
     @Override

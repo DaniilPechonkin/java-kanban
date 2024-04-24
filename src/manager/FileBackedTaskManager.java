@@ -11,7 +11,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     String FILENAME = "autosave.csv";
     private void save() {
         try (FileWriter fileWriter = new FileWriter(FILENAME)) {
-            fileWriter.write("id,type,name,status,description,epic" + "\n");
+            fileWriter.write("id,type,name,status,description,epic,startTime,duration,endTime" + "\n");
             for (Task task : getAllTasks()) {
                 fileWriter.write(ToFromString.toString(task));
             }
@@ -32,7 +32,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         BufferedReader br = new BufferedReader(reader);
         while (br.ready()) {
             String str = br.readLine();
-            if (!str.equals("id,type,name,status,description,epic")) {
+            if (!str.equals("id,type,name,status,description,epic,startTime,duration,endTime")) {
                 Task task = ToFromString.fromString(str);
                 if (task.getClass().equals(Task.class)) {
                     manager.tasks.put(task.getId(), task);
