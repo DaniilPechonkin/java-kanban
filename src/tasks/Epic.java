@@ -20,14 +20,7 @@ public class Epic extends Task {
         this.subtasksId = subtasksId;
     }
 
-    public void getEndTime(List<Subtask> subtasks) {
-        LocalDateTime latestEndTime = null;
-        for (Subtask subtask : subtasks) {
-            LocalDateTime subtaskEndTime = subtask.getEndTime();
-            if (latestEndTime == null || (subtaskEndTime != null && subtaskEndTime.isAfter(latestEndTime))) {
-                latestEndTime = subtaskEndTime;
-            }
-        }
-        this.endTime = latestEndTime;
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
     }
 }

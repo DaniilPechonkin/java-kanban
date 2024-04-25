@@ -15,7 +15,7 @@ public class InMemoryTaskManager implements TaskManager {
     protected final HashMap<Integer, Task> tasks = new HashMap<>();
     protected final HashMap<Integer, Epic> epics = new HashMap<>();
     protected final HashMap<Integer, Subtask> subtasks = new HashMap<>();
-    private TreeSet<Task> sortedByTimeTasks;
+    protected final TreeSet<Task> sortedByTimeTasks;
     private int count = 0;
 
     public InMemoryTaskManager() {
@@ -26,26 +26,24 @@ public class InMemoryTaskManager implements TaskManager {
     //методы создания
     @Override
     public void addTask(Task newTask) {
+        int id = addId();
+        newTask.setId(id);
+        tasks.put(id, newTask);
         if (isTasksCross(newTask)) {
-            int id = addId();
-            newTask.setId(id);
-            tasks.put(id, newTask);
             sortedByTimeTasks.add(newTask);
         }
     }
 
     @Override
     public void addSubtask(Subtask newSubtask) {
+        Epic epic = epics.get(newSubtask.getEpicId());
+        int subtaskId = addId();
+        newSubtask.setId(subtaskId);
+        subtasks.put(subtaskId, newSubtask);
         if (isTasksCross(newSubtask)) {
-            Epic epic = epics.get(newSubtask.getEpicId());
-            int subtaskId = addId();
-            newSubtask.setId(subtaskId);
-            subtasks.put(subtaskId, newSubtask);
             epic.getSubtasksId().add(subtaskId);
             changeStatus(epic.getId());
-            epic.setStartTime(getEpicStartTime(epic.getId()));
-            epic.setDuration(getEpicDuration(epic.getId()));
-            epic.setEndTime(getEpicEndTime(epic.getId()));
+            calculateTime(epic.getId());
             sortedByTimeTasks.add(newSubtask);
         }
     }
@@ -118,14 +116,11 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void removeSubtask(Integer id) {
         int epicId = subtasks.get(id).getEpicId();
-        Epic epic = epics.get(epicId);
         epics.get(epicId).getSubtasksId().remove(id);
         subtasks.remove(id);
         historyManager.remove(id);
         changeStatus(epicId);
-        epic.setStartTime(getEpicStartTime(epic.getId()));
-        epic.setDuration(getEpicDuration(epic.getId()));
-        epic.setEndTime(getEpicEndTime(epic.getId()));
+        calculateTime(epicId);
     }
 
     //методы удаления всех задач
@@ -147,9 +142,7 @@ public class InMemoryTaskManager implements TaskManager {
                         .forEach(epic -> {
                             epic.getSubtasksId().clear();
                             changeStatus(epic.getId());
-                            epic.setStartTime(getEpicStartTime(epic.getId()));
-                            epic.setDuration(getEpicDuration(epic.getId()));
-                            epic.setEndTime(getEpicEndTime(epic.getId()));
+                            calculateTime(epic.getId());
                         });
     }
 
@@ -162,12 +155,13 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void updateSubtask(Subtask newSubtask) {
         Integer epicId = newSubtask.getEpicId();
-        Epic epic = epics.get(epicId);
-        subtasks.put(epicId, newSubtask);
+        if (isTasksCross(newSubtask)) {
+            sortedByTimeTasks.remove(subtasks.get(newSubtask.getId()));
+            sortedByTimeTasks.add(newSubtask);
+            subtasks.put(epicId, newSubtask);
+        }
         changeStatus(epicId);
-        epic.setStartTime(getEpicStartTime(epic.getId()));
-        epic.setDuration(getEpicDuration(epic.getId()));
-        epic.setEndTime(getEpicEndTime(epic.getId()));
+        calculateTime(epicId);
     }
 
     @Override
@@ -273,5 +267,12 @@ public class InMemoryTaskManager implements TaskManager {
             return false;
         }
         return true;
+    }
+
+    private void calculateTime(Integer epicId) {
+        Epic epic = epics.get(epicId);
+        epic.setStartTime(getEpicStartTime(epic.getId()));
+        epic.setDuration(getEpicDuration(epic.getId()));
+        epic.setEndTime(getEpicEndTime(epic.getId()));
     }
 }

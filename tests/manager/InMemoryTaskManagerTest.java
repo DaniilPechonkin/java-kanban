@@ -10,6 +10,8 @@ import tasks.Status;
 import tasks.Subtask;
 import tasks.Task;
 
+import java.lang.reflect.Array;
+import java.time.Duration;
 import java.util.ArrayList;
 
 class InMemoryTaskManagerTest {
@@ -23,6 +25,9 @@ class InMemoryTaskManagerTest {
     public void beforeEach() {
         task1 = new tasks.Task("firstTask", "1");
         Task task2 = new tasks.Task("secondTask", "2");
+        task1.setDuration(Duration.ofMinutes(1));
+        task2.setStartTime(task1.getStartTime().plusMinutes(2));
+        task2.setDuration(Duration.ofMinutes(2));
         taskManager.addTask(task1);
         taskManager.addTask(task2);
 
@@ -31,6 +36,10 @@ class InMemoryTaskManagerTest {
 
         subtask1 = new tasks.Subtask("firstSubtask", "123",3);
         subtask2 = new tasks.Subtask("secondSubtask", "123",3);
+        subtask1.setStartTime(subtask1.getStartTime().plusMinutes(5));
+        subtask1.setDuration(Duration.ofMinutes(1));
+        subtask2.setStartTime(subtask2.getStartTime().plusMinutes(10));
+        subtask2.setDuration(Duration.ofMinutes(3));
         taskManager.addSubtask(subtask1);
         taskManager.addSubtask(subtask2);
     }
@@ -78,7 +87,10 @@ class InMemoryTaskManagerTest {
         subtask1.setStatus(Status.DONE);
         Subtask subtask3 = new Subtask("132", "213123", epic1.getId());
         subtask3.setStatus(Status.DONE);
+        subtask3.setStartTime(subtask2.getStartTime().plusMinutes(50));
+        subtask3.setDuration(Duration.ofMinutes(3));
         taskManager.addSubtask(subtask3);
+
         assertEquals(epic1.getStatus(), Status.IN_PROGRESS);
 
         //Две DONE
@@ -90,7 +102,9 @@ class InMemoryTaskManagerTest {
         subtask3.setStatus(Status.IN_PROGRESS);
         subtask1.setStatus(Status.IN_PROGRESS);
         subtask2.setStatus(Status.IN_PROGRESS);
-        taskManager.addSubtask(subtask2);
+        subtask2.setStartTime(subtask2.getStartTime().plusMinutes(100));
+        subtask2.setDuration(Duration.ofMinutes(3));
+        taskManager.addSubtask(subtask3);
         assertEquals(epic1.getStatus(), Status.IN_PROGRESS);
     }
 }

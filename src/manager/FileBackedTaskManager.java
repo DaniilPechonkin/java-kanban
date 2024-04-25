@@ -6,12 +6,12 @@ import tasks.Task;
 
 import java.io.*;
 
-
 public class FileBackedTaskManager extends InMemoryTaskManager {
     String FILENAME = "autosave.csv";
+
     private void save() {
         try (FileWriter fileWriter = new FileWriter(FILENAME)) {
-            fileWriter.write("id,type,name,status,description,epic,startTime,duration,endTime" + "\n");
+            fileWriter.write("id,type,name,status,description,startTime,duration,epic" + "\n");
             for (Task task : getAllTasks()) {
                 fileWriter.write(ToFromString.toString(task));
             }
@@ -32,19 +32,21 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         BufferedReader br = new BufferedReader(reader);
         while (br.ready()) {
             String str = br.readLine();
-            if (!str.equals("id,type,name,status,description,epic,startTime,duration,endTime")) {
+            if (!str.equals("id,type,name,status,description,startTime,duration,epic")) {
                 Task task = ToFromString.fromString(str);
-                if (task.getClass().equals(Task.class)) {
-                    manager.tasks.put(task.getId(), task);
+                if (task.getClass().equals(Epic.class)) {
+                    Epic epic = (Epic) task;
+                    manager.epics.put(epic.getId(), epic);
                 } else if (task.getClass().equals(Subtask.class)) {
                     Subtask subtask = (Subtask) task;
                     manager.subtasks.put(subtask.getId(), subtask);
                     Epic epic = manager.epics.get(subtask.getEpicId());
                     epic.getSubtasksId().add(subtask.getId());
                     manager.epics.put(epic.getId(), epic);
-                } else if (task.getClass().equals(Epic.class)) {
-                    Epic epic = (Epic) task;
-                    manager.epics.put(epic.getId(), epic);
+                    manager.sortedByTimeTasks.add(subtask);
+                } else if (task.getClass().equals(Task.class)) {
+                    manager.tasks.put(task.getId(), task);
+                    manager.sortedByTimeTasks.add(task);
                 }
             }
         }

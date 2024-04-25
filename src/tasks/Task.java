@@ -11,8 +11,6 @@ public class Task {
     private int id;
     private Duration duration;
     private LocalDateTime startTime;
-    private LocalDateTime endTime;
-
 
     public Task(String name, String description) {
         this.name = name;
@@ -61,15 +59,9 @@ public class Task {
         this.startTime = startTime;
     }
 
-    public void setEndTime(LocalDateTime endTime) {
-        this.endTime = endTime;
-    }
-
     public LocalDateTime getEndTime() {
         if (startTime != null && duration != null) {
-            long min = duration.toMinutes();
-            Duration minutes = Duration.ofMinutes(min);
-            return startTime.plus(minutes);
+            return startTime.plusMinutes(duration.toMinutes());
         } else {
             return null;
         }

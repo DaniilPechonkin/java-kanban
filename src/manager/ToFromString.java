@@ -12,15 +12,14 @@ public class ToFromString {
     public static String toString(Task task) {
         if (task.getClass() == Subtask.class) {
             return task.getId() + "," + "Subtask" +  "," + task.getName() + "," + task.getStatus() + ","
-                    + task.getDescription() + "," + ((Subtask) task).getEpicId() + "," + task.getStartTime() + ","
-                    + task.getDuration() + "," + task.getEndTime() + "\n";
+                    + task.getDescription() + "," + task.getStartTime() + "," + task.getDuration() + ","
+                    + ((Subtask) task).getEpicId() + "\n";
         } else if (task.getClass() == Epic.class){
-            return task.getId() + "," + "Epic" +  ","+ task.getName() + "," + task.getStatus() + "," + task.getDescription()
-                    + "," + task.getStartTime() + "," + task.getDuration() + "," + task.getEndTime()+ "\n";
+            return task.getId() + "," + "Epic" +  "," + task.getName() + "," + task.getStatus() + "," + task.getDescription()
+                    + "," + task.getStartTime() + "," + task.getDuration() + "\n";
         } else {
             return task.getId() + "," + "Task" + ","+ task.getName() + "," + task.getStatus() + ","
-                    + task.getDescription() + "," + task.getStartTime() + "," + task.getDuration() + ","
-                    + task.getEndTime() + "\n";
+                    + task.getDescription() + "," + task.getStartTime() + "," + task.getDuration() + "\n";
         }
     }
 
@@ -31,11 +30,10 @@ public class ToFromString {
         String name = values[2];
         String description = values[4];
         String epicId = null;
-        String startTime = values[6];
-        String duration = values[7];
-        String endTime = values[8];
-        if (values.length == 6) {
-            epicId = values[5];
+        String startTime = values[5];
+        String duration = values[6];
+        if (values.length == 8) {
+            epicId = values[7];
         }
         if (type.equals("Subtask")) {
             Subtask subtask = new Subtask(name, description, Integer.parseInt(epicId));
@@ -43,7 +41,6 @@ public class ToFromString {
             subtask.setStatus(Status.valueOf(values[3]));
             subtask.setStartTime(LocalDateTime.parse(startTime));
             subtask.setDuration(Duration.parse(duration));
-            subtask.setEndTime(LocalDateTime.parse(endTime));
             return subtask;
         } else if (type.equals("Epic")){
             Epic epic = new Epic(name, description);
@@ -51,7 +48,7 @@ public class ToFromString {
             epic.setStatus(Status.valueOf(values[3]));
             epic.setStartTime(LocalDateTime.parse(startTime));
             epic.setDuration(Duration.parse(duration));
-            epic.setEndTime(LocalDateTime.parse(endTime));
+            epic.setEndTime(epic.getEndTime());
             return epic;
         } else {
             Task task = new Task(name, description);
@@ -59,7 +56,6 @@ public class ToFromString {
             task.setStatus(Status.valueOf(values[3]));
             task.setStartTime(LocalDateTime.parse(startTime));
             task.setDuration(Duration.parse(duration));
-            task.setEndTime(LocalDateTime.parse(endTime));
             return task;
         }
     }

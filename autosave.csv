@@ -1,2 +1,6 @@
-id,type,name,status,description,epic,startTime,duration,endTime
-1,Task,firstTask,NEW,1,2024-04-24T23:38:38.433954800,null,null
+id,type,name,status,description,startTime,duration,epic
+1,Task,firstTask,NEW,1,2024-04-25T21:26:49.829772300,PT1M
+2,Task,secondTask,NEW,2,2024-04-25T21:28:49.829772300,PT2M
+3,Epic,firstEpic,NEW,123,2024-04-25T21:26:49.830772500,PT13M
+4,Subtask,firstSubtask,NEW,123,2024-04-25T21:31:49.830772500,PT1M,3
+5,Subtask,secondSubtask,NEW,123,2024-04-25T21:36:49.830772500,PT3M,3
