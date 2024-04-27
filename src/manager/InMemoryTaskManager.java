@@ -181,7 +181,6 @@ public class InMemoryTaskManager implements TaskManager {
     public void updateEpic(Epic newEpic) {
         epics.put(newEpic.getId(), newEpic);
     }
-
     
     //получение списка всех подзадач epica
     @Override
