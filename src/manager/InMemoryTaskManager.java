@@ -97,6 +97,7 @@ public class InMemoryTaskManager implements TaskManager {
     //методы удаления по id
     @Override
     public void removeTask(Integer id) {
+        sortedByTimeTasks.remove(tasks.get(id));
         tasks.remove(id);
         historyManager.remove(id);
     }
@@ -106,6 +107,7 @@ public class InMemoryTaskManager implements TaskManager {
         Epic epic = epics.get(id);
         epic.getSubtasksId().stream()
                         .forEach(subtaskId -> {
+                            sortedByTimeTasks.remove(subtasks.get(subtaskId));
                             subtasks.remove(subtaskId);
                             historyManager.remove(subtaskId);
                         });
@@ -117,6 +119,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void removeSubtask(Integer id) {
         int epicId = subtasks.get(id).getEpicId();
         epics.get(epicId).getSubtasksId().remove(id);
+        sortedByTimeTasks.remove(subtasks.get(id));
         subtasks.remove(id);
         historyManager.remove(id);
         changeStatus(epicId);
@@ -126,6 +129,12 @@ public class InMemoryTaskManager implements TaskManager {
     //методы удаления всех задач
     @Override
     public void removeAllTasks() {
+        tasks.keySet().stream()
+                .forEach(id-> {
+                    sortedByTimeTasks.remove(tasks.get(id));
+                    tasks.remove(id);
+                    historyManager.remove(id);
+                });
         tasks.clear();
     }
 
@@ -149,7 +158,11 @@ public class InMemoryTaskManager implements TaskManager {
     //методы обновления задач
     @Override
     public void updateTask(Task newTask) {
-        tasks.put(newTask.getId(), newTask);
+        if (isTasksCross(newTask)) {
+            sortedByTimeTasks.remove(subtasks.get(newTask.getId()));
+            sortedByTimeTasks.add(newTask);
+            tasks.put(newTask.getId(), newTask);
+        }
     }
 
     @Override
@@ -169,6 +182,7 @@ public class InMemoryTaskManager implements TaskManager {
         epics.put(newEpic.getId(), newEpic);
     }
 
+    
     //получение списка всех подзадач epica
     @Override
     public ArrayList<Subtask> getEpicSubtasks(int id) {
