@@ -140,6 +140,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void removeAllEpics() {
+        epics.values().stream()
+                .flatMap(epic -> epic.getSubtasksId().stream())
+                .forEach(id -> sortedByTimeTasks.remove(subtasks.get(id)));
         epics.clear();
         subtasks.clear();
     }
@@ -147,13 +150,16 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void removeAllSubtasks() {
         subtasks.clear();
-        epics.values().stream()
-                        .forEach(epic -> {
-                            epic.getSubtasksId().clear();
-                            changeStatus(epic.getId());
-                            calculateTime(epic.getId());
-                        });
+        epics.values().forEach(epic -> {
+            epic.getSubtasksId().stream()
+                    .map(subtasks::get)
+                    .forEach(sortedByTimeTasks::remove);
+            epic.getSubtasksId().clear();
+            changeStatus(epic.getId());
+            calculateTime(epic.getId());
+        });
     }
+
 
     //методы обновления задач
     @Override
