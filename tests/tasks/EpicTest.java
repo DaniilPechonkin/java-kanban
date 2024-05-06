@@ -1,13 +1,10 @@
 package tasks;
 
-import manager.HistoryManager;
 import manager.InMemoryTaskManager;
-import manager.Manager;
-import manager.TaskManager;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
 import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -17,6 +14,8 @@ class EpicTest {
     @Test
     void addNewEpic() {
         Epic epic = new Epic("epic", "epic");
+        epic.setStartTime(epic.getStartTime().plusMinutes(50));
+        epic.setDuration(Duration.ofMinutes(3));
         taskManager.addEpic(epic);
         Epic savedEpic = taskManager.findEpic(epic.getId());
 

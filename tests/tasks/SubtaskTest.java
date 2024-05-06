@@ -1,13 +1,11 @@
 package tasks;
 
 import manager.InMemoryTaskManager;
-import manager.Manager;
-import manager.TaskManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
 import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -19,8 +17,12 @@ class SubtaskTest {
     @BeforeEach
     public void beforeEach() {
         epic = new Epic("1", "2");
+        epic.setStartTime(epic.getStartTime().plusMinutes(50));
+        epic.setDuration(Duration.ofMinutes(3));
         taskManager.addEpic(epic);
         subtask = new Subtask("epic", "epic",1);
+        subtask.setStartTime(epic.getStartTime().plusMinutes(50));
+        subtask.setDuration(Duration.ofMinutes(3));
         taskManager.addSubtask(subtask);
     }
 

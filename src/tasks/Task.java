@@ -1,5 +1,7 @@
 package tasks;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Task {
@@ -7,11 +9,14 @@ public class Task {
     private Status status;
     private String description;
     private int id;
+    private Duration duration;
+    private LocalDateTime startTime;
 
     public Task(String name, String description) {
         this.name = name;
         this.status = Status.NEW;
         this.description = description;
+        this.startTime = LocalDateTime.now();
     }
 
     public String getName() {
@@ -44,6 +49,30 @@ public class Task {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public LocalDateTime getEndTime() {
+        if (startTime != null && duration != null) {
+            return startTime.plusMinutes(duration.toMinutes());
+        } else {
+            return null;
+        }
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public Duration getDuration() {
+        return duration;
     }
 
     @Override

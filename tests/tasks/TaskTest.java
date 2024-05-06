@@ -1,12 +1,10 @@
 package tasks;
 
 import manager.InMemoryTaskManager;
-import manager.Manager;
-import manager.TaskManager;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
 import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -16,6 +14,8 @@ class TaskTest {
     @Test
     void addNewTask() {
         Task task = new Task("epic", "epic");
+        task.setStartTime(task.getStartTime().plusMinutes(50));
+        task.setDuration(Duration.ofMinutes(3));
         taskManager.addTask(task);
         Task savedTask= taskManager.findTask(task.getId());
 
