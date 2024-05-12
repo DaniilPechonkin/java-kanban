@@ -9,13 +9,12 @@ import tasks.Epic;
 import tasks.Status;
 import tasks.Subtask;
 import tasks.Task;
+import manager.Manager;
 
-import java.lang.reflect.Array;
 import java.time.Duration;
-import java.util.ArrayList;
 
 class InMemoryTaskManagerTest {
-    TaskManager taskManager = Manager.getDefaultTask();
+    manager.TaskManager taskManager = Manager.getDefaultTask();
     Task task1;
     Epic epic1;
     Subtask subtask1;

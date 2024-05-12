@@ -21,19 +21,19 @@ public class TaskHandler extends BaseHttpHandler {
 
             if (queryString != null && queryString.contains("id=")) {
                 String idValue = queryString.substring(queryString.indexOf("id="));
-
+                Gson gson = new Gson();
                 try {
                     int id = Integer.parseInt(idValue);
-                    response = taskManager.findTask(id).toString();
+                    response = gson.toJson(taskManager.findTask(id));
                     sendText(httpExchange, response, 200);
                 } catch (NumberFormatException e) {
-                    response = "Invalid task ID format";
-                    sendText(httpExchange, response, 400);
+                    sendText(httpExchange, "Invalid task ID format", 400);
                 } catch (NullPointerException e) {
                     sendNotFound(httpExchange);
                 }
             } else {
-                response = taskManager.getAllTasks().toString();
+                Gson gson = new Gson();
+                response = gson.toJson(taskManager.getAllTasks());
                 sendText(httpExchange, response, 200);
             }
         } else if ("POST".equals(method)) {
@@ -47,8 +47,7 @@ public class TaskHandler extends BaseHttpHandler {
                     taskManager.updateTask(taskManager.findTask(id));
                     sendText(httpExchange, "Task updated", 201);
                 } catch (NumberFormatException e) {
-                    String response = "Invalid task ID format";
-                    sendText(httpExchange, response, 400);
+                    sendText(httpExchange, "Invalid task ID format", 400);
                 } catch (NullPointerException e) {
                     sendNotFound(httpExchange);
                 }
@@ -57,9 +56,9 @@ public class TaskHandler extends BaseHttpHandler {
                 try (BufferedReader br = new BufferedReader(isr)) {
                     String body = br.lines().collect(Collectors.joining("n"));
                     Gson gson = new Gson();
-                    JsonObject jsonBody = gson.fromJson(body, JsonObject.class);
-                    String name = jsonBody.get("name").getAsString();
-                    String description = jsonBody.get("description").getAsString();
+                    Task task = gson.fromJson(body, Task.class);
+                    String name = task.getName();
+                    String description = task.getDescription();
                     taskManager.addTask(new Task(name, description));
                     sendText(httpExchange, "Task created", 201);
                 }
@@ -75,8 +74,7 @@ public class TaskHandler extends BaseHttpHandler {
                     taskManager.removeTask(id);
                     sendText(httpExchange, "Task removed", 200);
                 } catch (NumberFormatException e) {
-                    String response = "Invalid Task ID format";
-                    sendText(httpExchange, response, 400);
+                    sendText(httpExchange, "Invalid Task ID format", 400);
                 } catch (NullPointerException e) {
                     sendNotFound(httpExchange);
                 }

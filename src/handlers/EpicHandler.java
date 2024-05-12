@@ -21,19 +21,20 @@ public class EpicHandler extends BaseHttpHandler {
 
             if (queryString != null && queryString.contains("id=")) {
                 String idValue = queryString.substring(queryString.indexOf("id="));
+                Gson gson = new Gson();
 
                 try {
                     int id = Integer.parseInt(idValue);
-                    response = taskManager.findEpic(id).toString();
+                    response = gson.toJson(taskManager.findEpic(id));
                     sendText(httpExchange, response, 200);
                 } catch (NumberFormatException e) {
-                    response = "Invalid Epic ID format";
-                    sendText(httpExchange, response, 400);
+                    sendText(httpExchange, "Invalid Epic ID format", 400);
                 } catch (NullPointerException e) {
                     sendNotFound(httpExchange);
                 }
             } else {
-                response = taskManager.getAllEpics().toString();
+                Gson gson = new Gson();
+                response = gson.toJson(taskManager.getAllEpics());
                 sendText(httpExchange, response, 200);
             }
         } else if ("POST".equals(method)) {
@@ -47,8 +48,7 @@ public class EpicHandler extends BaseHttpHandler {
                     taskManager.updateEpic(taskManager.findEpic(id));
                     sendText(httpExchange, "Epic updated", 201);
                 } catch (NumberFormatException e) {
-                    String response = "Invalid Epic ID format";
-                    sendText(httpExchange, response, 400);
+                    sendText(httpExchange, "Invalid Epic ID format", 400);
                 } catch (NullPointerException e) {
                     sendNotFound(httpExchange);
                 }
@@ -57,9 +57,9 @@ public class EpicHandler extends BaseHttpHandler {
                 try (BufferedReader br = new BufferedReader(isr)) {
                     String body = br.lines().collect(Collectors.joining("n"));
                     Gson gson = new Gson();
-                    JsonObject jsonBody = gson.fromJson(body, JsonObject.class);
-                    String name = jsonBody.get("name").getAsString();
-                    String description = jsonBody.get("description").getAsString();
+                    Epic epic = gson.fromJson(body, Epic.class);
+                    String name = epic.getName();
+                    String description = epic.getDescription();
                     taskManager.addTask(new Epic(name, description));
                     sendText(httpExchange, "Epic created", 201);
                 }
@@ -75,8 +75,7 @@ public class EpicHandler extends BaseHttpHandler {
                     taskManager.removeEpic(id);
                     sendText(httpExchange, "Epic removed", 200);
                 } catch (NumberFormatException e) {
-                    String response = "Invalid Epic ID format";
-                    sendText(httpExchange, response, 400);
+                    sendText(httpExchange, "Invalid Epic ID format", 400);
                 } catch (NullPointerException e) {
                     sendNotFound(httpExchange);
                 }

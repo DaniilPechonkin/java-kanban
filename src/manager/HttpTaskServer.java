@@ -1,7 +1,8 @@
 package manager;
 
-import com.sun.net.httpserver.HttpServer;
 import handlers.*;
+
+import com.sun.net.httpserver.HttpServer;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -16,7 +17,15 @@ public class HttpTaskServer {
         httpServer.createContext("/epics", new EpicHandler());
         httpServer.createContext("/history", new HistoryHandler());
         httpServer.createContext("/prioritized", new PrioritizedHandler());
+    }
 
+    public void start() throws IOException{
+        HttpServer httpServer = HttpServer.create(new InetSocketAddress(PORT), 0);
         httpServer.start();
+    }
+
+    public void stop() throws IOException{
+        HttpServer httpServer = HttpServer.create(new InetSocketAddress(PORT), 0);
+        httpServer.stop(1);
     }
 }

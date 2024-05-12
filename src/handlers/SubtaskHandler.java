@@ -21,19 +21,20 @@ public class SubtaskHandler extends BaseHttpHandler {
 
             if (queryString != null && queryString.contains("id=")) {
                 String idValue = queryString.substring(queryString.indexOf("id="));
+                Gson gson = new Gson();
 
                 try {
                     int id = Integer.parseInt(idValue);
-                    response = taskManager.findSubtask(id).toString();
+                    response = gson.toJson(taskManager.findSubtask(id));
                     sendText(httpExchange, response, 200);
                 } catch (NumberFormatException e) {
-                    response = "Invalid Subtask ID format";
-                    sendText(httpExchange, response, 400);
+                    sendText(httpExchange, "Invalid Subtask ID format", 400);
                 } catch (NullPointerException e) {
                     sendNotFound(httpExchange);
                 }
             } else {
-                response = taskManager.getAllSubtasks().toString();
+                Gson gson = new Gson();
+                response = gson.toJson(taskManager.getAllSubtasks());
                 sendText(httpExchange, response, 200);
             }
         } else if ("POST".equals(method)) {
@@ -47,8 +48,7 @@ public class SubtaskHandler extends BaseHttpHandler {
                     taskManager.updateSubtask(taskManager.findSubtask(id));
                     sendText(httpExchange, "Subtask updated", 201);
                 } catch (NumberFormatException e) {
-                    String response = "Invalid Subtask ID format";
-                    sendText(httpExchange, response, 400);
+                    sendText(httpExchange, "Invalid Subtask ID format", 400);
                 } catch (NullPointerException e) {
                     sendNotFound(httpExchange);
                 }
@@ -57,11 +57,11 @@ public class SubtaskHandler extends BaseHttpHandler {
                 try (BufferedReader br = new BufferedReader(isr)) {
                     String body = br.lines().collect(Collectors.joining("n"));
                     Gson gson = new Gson();
-                    JsonObject jsonBody = gson.fromJson(body, JsonObject.class);
-                    String name = jsonBody.get("name").getAsString();
-                    String description = jsonBody.get("description").getAsString();
-                    String epicId = jsonBody.get("epicId").getAsString();
-                    taskManager.addTask(new Subtask(name, description, Integer.parseInt(epicId)));
+                    Subtask subtask = gson.fromJson(body, Subtask.class);
+                    String name = subtask.getName();
+                    String description = subtask.getDescription();
+                    int epicId = subtask.getEpicId();
+                    taskManager.addTask(new Subtask(name, description, epicId));
                     sendText(httpExchange, "Subtask created", 201);
                 }
             }
