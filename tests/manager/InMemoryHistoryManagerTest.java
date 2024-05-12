@@ -3,6 +3,8 @@ package manager;
 import org.junit.jupiter.api.Test;
 import tasks.Epic;
 import tasks.Task;
+import manager.HistoryManager;
+import manager.Manager;
 
 import java.util.ArrayList;
 
